@@ -17,9 +17,20 @@ const {
 const router = (req, res) => {
   const { method } = req
 
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173")
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+  )
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization") // Add any custom headers your frontend sends
+
   console.log(`Server Traffic: ${method}`)
 
   switch (method) {
+    case "OPTIONS":
+      res.writeHead(204)
+      res.end()
+      break
     case "GET":
       getTodos(req, res)
       break

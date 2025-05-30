@@ -11,16 +11,14 @@ const errorBuilder = (error, message = "not found", status = 500, res) => {
     response: message
   })
 
-  res.statusCode = status
-  res.setHeader("Content-Type", "application/json")
+  res.writeHead(status, { "Content-Type": "application/json" })
   res.end(errorResponse)
 }
 
 const resBuilder = (responseObject, status = 200, res) => {
   const response = JSON.stringify(responseObject)
 
-  res.statusCode = status
-  res.setHeader("Content-Type", "application/json")
+  res.writeHead(status, { "Content-Type": "application/json" })
   res.end(response)
 }
 
@@ -50,7 +48,7 @@ exports.getTodos = async (req, res) => {
       {
         status: "ok",
         code: 200,
-        response: _todos
+        data: _todos
       },
       200,
       res
@@ -83,11 +81,7 @@ exports.createTodos = async (req, res) => {
 
       if (typeof parsedBody === "object") {
         Todo.create(parsedBody?.title, parsedBody?.description)
-        resBuilder(
-          { status: "ok", code: 200, response: "Successful" },
-          200,
-          res
-        )
+        resBuilder({ status: "ok", code: 200, data: "Successful" }, 200, res)
       } else {
         errorBuilder(null, "Bad request", 400, res)
       }
@@ -126,9 +120,9 @@ exports.updateTodos = async (req, res) => {
         const todo = Todo.update(queryParams.id, parsedBody)
 
         if (todo) {
-          resBuilder({ status: "ok", code: 200, response: todo }, 200, res)
+          resBuilder({ status: "ok", code: 200, data: todo }, 200, res)
         } else {
-          resBuilder({ status: "ok", code: 204, response: {} }, 204, res)
+          resBuilder({ status: "ok", code: 204, data: {} }, 204, res)
         }
       } else {
         errorBuilder(null, "Bad request", 400, res)
