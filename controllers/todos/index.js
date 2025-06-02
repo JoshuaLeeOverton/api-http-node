@@ -142,8 +142,7 @@ exports.updateTodos = async (req, res) => {
  */
 exports.deleteTodos = async (req, res) => {
   try {
-    const { url } = req.url
-    const parsedUrl = new URL(url, `http://${req.headers.host}`)
+    const parsedUrl = new URL(req.url, `http://${req.headers.host}`)
     const queryParams = Object.fromEntries(parsedUrl.searchParams.entries())
 
     const successful = Todo.delete(queryParams.id)
