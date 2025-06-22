@@ -40,7 +40,7 @@ exports.getTodos = async (req, res) => {
       const todos = Todo.getById(queryParams.id)
       _todos.push(fetchedTodo)
     } else {
-      const todos = Todo.getAll()
+      const todos = await Todo.getAll()
       _todos = todos
     }
 
@@ -71,7 +71,7 @@ exports.createTodos = async (req, res) => {
     req.on("data", (chunk) => {
       body += chunk
     })
-    req.on("end", () => {
+    req.on("end", async () => {
       let parsedBody
       try {
         parsedBody = JSON.parse(body)
@@ -80,7 +80,7 @@ exports.createTodos = async (req, res) => {
       }
 
       if (typeof parsedBody === "object") {
-        Todo.create(parsedBody?.title, parsedBody?.description)
+        await Todo.create(parsedBody?.title, parsedBody?.description)
         resBuilder({ status: "ok", code: 200, data: "Successful" }, 200, res)
       } else {
         errorBuilder(null, "Bad request", 400, res)
@@ -108,7 +108,7 @@ exports.updateTodos = async (req, res) => {
     req.on("data", (chunk) => {
       body += chunk
     })
-    req.on("end", () => {
+    req.on("end", async () => {
       let parsedBody
       try {
         parsedBody = JSON.parse(body)
@@ -117,7 +117,7 @@ exports.updateTodos = async (req, res) => {
       }
 
       if (typeof parsedBody === "object" && queryParams?.id) {
-        const todo = Todo.update(queryParams.id, parsedBody)
+        const todo = await Todo.update(queryParams.id, parsedBody)
 
         if (todo) {
           resBuilder({ status: "ok", code: 200, data: todo }, 200, res)
@@ -145,7 +145,7 @@ exports.deleteTodos = async (req, res) => {
     const parsedUrl = new URL(req.url, `http://${req.headers.host}`)
     const queryParams = Object.fromEntries(parsedUrl.searchParams.entries())
 
-    const successful = Todo.delete(queryParams.id)
+    const successful = await Todo.delete(queryParams.id)
 
     if (successful) {
       resBuilder(
